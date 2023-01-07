@@ -50,5 +50,5 @@ if __name__ == '__main__':
         #lambda x: x[:, 3]>50000,
         ], 10000))
     #learner.fit(x, y, A, 0.1)
-    ctrl = Controller(learner, 0.1, 0.01)
+    ctrl = Controller(learner, 1e-30)
     ctrl.fit(iter(zip(x, y, A)))

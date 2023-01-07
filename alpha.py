@@ -1,9 +1,8 @@
 import numpy as np
 
 class Controller:
-    def __init__(self, learner, alpha, delta):
+    def __init__(self, learner, delta):
         self.learner = learner
-        self.alpha = alpha
         self.delta = delta
 
     def fit(self, iterator):
@@ -20,6 +19,7 @@ class Controller:
             if np.min(list(n_per_class.values())) - np.sqrt(n * C1) >= C2:
                 break
         
+        self.alpha = 4*np.sqrt(np.log(256/self.delta)/np.min(list(n_per_class.values())))
         print(f'The learner needs to access {n} samples.')
         self.learner.fit(np.array(data_x), np.array(data_y), np.array(data_A), self.alpha)
 
