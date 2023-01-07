@@ -3,7 +3,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 class NDLearner:
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         pass
 
     def fit(self, x, y, A, alpha):
@@ -47,13 +47,13 @@ class WrappedFun(NDFunction):
     def __call__(self, x):
         return self.fun(x)
 
-class FiniteLearner(NDLearner):
+class FiniteLearner(NDLearner, WrappedFun):
     'For set of NDFunctions finds the empirical best.'
     def __init__(self, funs):
         self.funs = [] #[WrappedFun(lambda x: 1)] # The constant funtion is added to makes sure that self.funs is non-empty and that there is a non-discriminatory predictor
         self.funs.extend(funs)
-        self.fun = funs[0]
-
+        WrappedFun.__init__(self, funs[0])
+        
     def fit(self, x, y, A, alpha):
         current_loss = 1e9
         current_gamma_loss = 0.

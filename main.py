@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from learner import WrappedFun, FiniteLearner, compose
+from alpha import Controller
 
 def test1():
 
@@ -20,6 +21,7 @@ if __name__ == '__main__':
     df = pd.read_csv('data/application_train.csv', usecols=['TARGET', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 'CODE_GENDER', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'OWN_CAR_AGE'])
     df = df.dropna()
     df = pd.concat((df[df.TARGET==1], df[df.TARGET==0].sample(frac=0.1)))
+    df = df.sample(frac=1) # Shuffle dataset
     print(df.describe())
     y = df['TARGET'].to_numpy()
     x = np.concatenate(
@@ -47,4 +49,6 @@ if __name__ == '__main__':
         lambda x: 3*x[:, 6],
         #lambda x: x[:, 3]>50000,
         ], 10000))
-    learner.fit(x, y, A, 0.1)
+    #learner.fit(x, y, A, 0.1)
+    ctrl = Controller(learner, 0.1, 0.01)
+    ctrl.fit(iter(zip(x, y, A)))
