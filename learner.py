@@ -56,6 +56,7 @@ class FiniteLearner(NDLearner):
 
     def fit(self, x, y, A, alpha):
         current_loss = 1e9
+        current_gamma_loss = 0.
         losses = {i: [] for i in range(10)}
         for f in tqdm(self.funs):
             loss, gamma_loss, _ = f.loss(x, y, A)
@@ -63,11 +64,16 @@ class FiniteLearner(NDLearner):
                 losses[int(gamma_loss*100)].append(loss)
             if gamma_loss <= alpha and loss < current_loss:
                 current_loss = loss
+                current_gamma_loss = gamma_loss
                 self.fun = f
 
-        print(f'A {alpha}-discriminatory empirical minimizer has been found with test loss: {current_loss}.')
+        print(f'A {alpha}-discriminatory empirical minimizer has been found with {current_loss} test loss and {current_gamma_loss} gamma loss.')
         plt.boxplot(list(losses.values()))
-        plt.savefig('gamma.png')
+        plt.savefig('gamma_vs_mistakes.png')
+
+        plt.clf()
+        plt.plot(list(map(lambda x: np.min(x), losses.values())))
+        plt.savefig('empirical_bests.png')
 
 class Majority(NDFunction):
     def __init__(self, weight, funs):

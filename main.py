@@ -17,13 +17,16 @@ def test1():
     learner.fit(x, y, A, 0.1)
 
 if __name__ == '__main__':
-    df = pd.read_csv('data/application_train.csv', usecols=['TARGET', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 'CODE_GENDER', 'CNT_CHILDREN', 'AMT_CREDIT'])
+    df = pd.read_csv('data/application_train.csv', usecols=['TARGET', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 'CODE_GENDER', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'OWN_CAR_AGE'])
     df = df.dropna()
+    df = pd.concat((df[df.TARGET==1], df[df.TARGET==0].sample(frac=0.1)))
+    print(df.describe())
     y = df['TARGET'].to_numpy()
     x = np.concatenate(
         ((df[['FLAG_OWN_CAR', 'FLAG_OWN_REALTY']]=='Y').to_numpy().astype(np.int32),
         df[['CNT_CHILDREN']].to_numpy(),
-        df[['AMT_CREDIT']].to_numpy().astype(np.int32),
+        df[['AMT_CREDIT', 'AMT_INCOME_TOTAL', 'OWN_CAR_AGE']].to_numpy().astype(np.int32),
+        (df[['CODE_GENDER']]=='M').to_numpy().astype(np.int32),
         ),
         axis=-1)
 
@@ -32,13 +35,16 @@ if __name__ == '__main__':
     print(x[:10], y[:10])
 
     learner = FiniteLearner(compose([
-        #lambda x: x[:, 0], 
-        #lambda x: x[:, 1],
+        lambda x: x[:, 0], 
+        lambda x: x[:, 1],
         lambda x: x[:, 2]>0,
-        lambda x: x[:, 3]>400000,
-        lambda x: x[:, 3]>300000,
-        lambda x: x[:, 3]>200000,
+        lambda x: x[:, 3]>1000000,
+        lambda x: x[:, 3]>500000,
         lambda x: x[:, 3]>100000,
-        lambda x: x[:, 3]>50000,
-        ], 4000))
+        lambda x: x[:, 4]>200000,
+        lambda x: x[:, 5]>10,
+        lambda x: x[:, 5]>20,
+        lambda x: 3*x[:, 6],
+        #lambda x: x[:, 3]>50000,
+        ], 10000))
     learner.fit(x, y, A, 0.1)
