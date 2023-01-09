@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 def simulate(probabilities, delta, correction_factor):
     n = 0
     cnts = [0, 0, 0, 0]
-    while correction_factor * (min(cnts) - sqrt(n) * sqrt(log(4 / delta) / 2)) < 8 * log(32 / delta):
+    while min(cnts) - sqrt(n) * sqrt(log(4 / delta) / 2) < correction_factor * 8 * log(32 / delta):
         curr = random.choices(list(range(4)), probabilities)[0]
         n += 1
         cnts[curr] += 1
@@ -28,7 +28,7 @@ def create_plot(expected_value, empirical_average, distribution, quantity, proba
         plt.show()
 
 
-def analyse(probabilities, delta, correction_factor=0.3, num_simulations=100, show_result=False):
+def analyse(probabilities, delta, correction_factor=5, num_simulations=100, show_result=False):
     ns = []
     alphas = []
     for i in range(num_simulations):
@@ -36,9 +36,9 @@ def analyse(probabilities, delta, correction_factor=0.3, num_simulations=100, sh
         ns.append(n)
         alphas.append(alpha)
     minp = min(probabilities)
-    a = (correction_factor * minp) ** 2
-    b = -2 * correction_factor * 8 * log(32 / delta) * minp - (correction_factor ** 2) * log(4 / delta) / 2
-    c = 64 * (log(32 / delta) ** 2)
+    a = minp ** 2
+    b = -2 * correction_factor * 8 * log(32 / delta) * minp - log(4 / delta) / 2
+    c = (correction_factor ** 2) * 64 * (log(32 / delta) ** 2)
     expected_n = (-b + sqrt(b ** 2 - 4 * a * c)) / (2 * a)  # solving quadratic
     # this is an underestimate, because it assumes that the empirical argmin is the same as the argmin probability
     # the more there is a unique minimun probability, the more accurate this estimate is
