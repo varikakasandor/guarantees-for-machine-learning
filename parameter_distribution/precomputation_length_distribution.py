@@ -28,7 +28,7 @@ def create_plot(expected_value, empirical_average, distribution, quantity, proba
         plt.show()
 
 
-def analyse(probabilities, delta, correction_factor=5, num_simulations=100, show_result=False):
+def analyse(probabilities, delta, correction_factor=1, num_simulations=100, show_result=False):
     ns = []
     alphas = []
     for i in range(num_simulations):
