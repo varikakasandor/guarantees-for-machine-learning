@@ -32,13 +32,14 @@ class OneStepAlgorithm:
         self.delta = delta
 
     def fit(self, dataset, test_size=0.3):
-        n = len(dataset)
         X, Y, A = dataset
-        X_train, X_test, Y_train, Y_test, A_train, A_test = train_test_split(X, Y, A, test_size=test_size)
+        n = len(X)
+        X_train, X_test, Y_train, Y_test, A_train, A_test = train_test_split(X, Y, A, test_size=test_size, random_state=23)
         min_ya_p_ya = find_min_ya_p_ya(Y, A)
         alpha = 2 * np.sqrt(np.log(64 / self.delta) / (n * min_ya_p_ya))
-        objective_loss_train, alpha_loss_train, _ = self.learner.fit(X_train, Y_train, A_train, alpha, min_ya_p_ya)
+        objective_loss_train, alpha_loss_train = self.learner.fit(X_train, Y_train, A_train, alpha, min_ya_p_ya)
         objective_loss_test, alpha_loss_test, _, _ = self.learner.loss(X_test, Y_test, A_test)
-        print(f"The learner has objective loss {objective_loss_train} and gamma loss {alpha_loss_train} on the "
+        print(f"The learner has objective loss {objective_loss_train} and alpha loss {alpha_loss_train} on the "
               f"training set.")
-        print(f"The learner has objective loss {objective_loss_test} and gamma loss {alpha_loss_test} on the test set.")
+        print(f"The learner has objective loss {objective_loss_test} and alpha loss {alpha_loss_test} on the test set.")
+        # TODO: add decomposition into categories

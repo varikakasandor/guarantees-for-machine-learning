@@ -3,23 +3,6 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 
-class NDLearner:
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def fit(self, x, y, A, alpha, min_ya_p_ya=0.25):
-        '''
-        Finds the empirical minimalizer that is alpha-discriminatory.
-        '''
-        pass
-
-    def __call__(self, x, A=None):
-        '''
-        Returns the prediction on the data x.
-        '''
-        pass
-
-
 class NDFunction:
     def __init__(self):
         pass
@@ -42,10 +25,8 @@ class NDFunction:
                 n_per_class[k] != 0 else 0.5
             p_y_hat_given_y = np.sum((y == _y) & (prediction == 1)).astype(np.float32) / n_per_target if \
                 n_per_target != 0 else 0.5
-            beta_loss = max(beta_loss, abs(gamma[k] - p_y_hat_given_y) * n_per_class[k])
+            beta_loss = max(beta_loss, abs(gamma[k] - p_y_hat_given_y) * (n_per_class[k] / len(x)))
         alpha_loss = max(abs(gamma[(0, 0)] - gamma[(0, 1)]), abs(gamma[(1, 0)] - gamma[(1, 1)]))
-        # print(n_per_class)
-        # print(gamma)
         return loss, alpha_loss, beta_loss, (n_per_class, gamma)
 
 
@@ -58,7 +39,7 @@ class WrappedFun(NDFunction):
         return self.fun(x)
 
 
-class FiniteAlphaLearner(NDLearner, WrappedFun):
+class FiniteAlphaLearner(WrappedFun):
     'For set of NDFunctions finds the empirical best.'
 
     def __init__(self, funs):
@@ -78,18 +59,18 @@ class FiniteAlphaLearner(NDLearner, WrappedFun):
                 current_alpha_loss = alpha_loss
                 self.fun = f
 
-        print(
-            f'A {alpha}-discriminatory empirical minimizer has been found with {current_loss} test loss and {current_alpha_loss} gamma loss.')
-        plt.boxplot(list(losses.values()))
-        plt.savefig('gamma_vs_mistakes.png')
-
-        plt.clf()
-        plt.plot(list(map(lambda x: np.min(x), losses.values())))
-        plt.savefig('empirical_bests.png')
+        # print(
+        #     f'A {alpha}-discriminatory empirical minimizer has been found with {current_loss} test loss and {current_alpha_loss} gamma loss.')
+        # plt.boxplot(list(losses.values()))
+        # plt.savefig('gamma_vs_mistakes.png')
+        #
+        # plt.clf()
+        # plt.plot(list(map(lambda x: np.min(x), losses.values())))
+        # plt.savefig('empirical_bests.png')
         return current_loss, current_alpha_loss
 
 
-class FiniteBetaLearner(NDLearner, WrappedFun):
+class FiniteBetaLearner(WrappedFun):
     'For set of NDFunctions finds the empirical best.'
 
     def __init__(self, funs):
