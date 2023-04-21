@@ -79,7 +79,7 @@ class FiniteBetaLearner(WrappedFun):
         WrappedFun.__init__(self, funs[0])
 
     def fit(self, x, y, A, alpha, min_ya_p_ya=0.25):
-        beta = alpha * min_ya_p_ya
+        beta = alpha * min_ya_p_ya / 2 # TODO: it is not always 2, it depends on P(A), and is unclear how to be set
         current_loss, current_alpha_loss, current_beta_loss = 1e9, 0., 0.
         for f in tqdm(self.funs):
             loss, alpha_loss, beta_loss, _ = f.loss(x, y, A)
