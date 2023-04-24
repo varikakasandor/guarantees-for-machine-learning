@@ -37,9 +37,12 @@ class OneStepAlgorithm:
         X_train, X_test, Y_train, Y_test, A_train, A_test = train_test_split(X, Y, A, test_size=test_size, random_state=23)
         min_ya_p_ya = find_min_ya_p_ya(Y, A)
         alpha = 2 * np.sqrt(np.log(64 / self.delta) / (n * min_ya_p_ya))
-        objective_loss_train, alpha_loss_train = self.learner.fit(X_train, Y_train, A_train, alpha, min_ya_p_ya)
-        objective_loss_test, alpha_loss_test, _, _ = self.learner.loss(X_test, Y_test, A_test)
+        objective_loss_train, alpha_loss_train, gamma_train = self.learner.fit(X_train, Y_train, A_train, alpha, min_ya_p_ya)
+        objective_loss_test, alpha_loss_test, _, tmp = self.learner.loss(X_test, Y_test, A_test)
+        _, gamma_test = tmp
         print(f"The learner has objective loss {objective_loss_train} and alpha loss {alpha_loss_train} on the "
               f"training set.")
         print(f"The learner has objective loss {objective_loss_test} and alpha loss {alpha_loss_test} on the test set.")
-        # TODO: add decomposition into categories
+        print(f"The learnt majority function has weights {self.learner.fun.weight}")
+        print(f"Gamma on train is = {gamma_train}")
+        print(f"Gamma on test is = {gamma_test}")

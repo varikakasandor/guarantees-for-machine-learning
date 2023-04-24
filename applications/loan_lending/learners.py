@@ -48,15 +48,17 @@ class FiniteAlphaLearner(WrappedFun):
         WrappedFun.__init__(self, funs[0])
 
     def fit(self, x, y, A, alpha, min_ya_p_ya=0.25):
-        current_loss, current_alpha_loss = 1e9, 0.
+        current_loss, current_alpha_loss, current_gamma = 1e9, 0., None
         losses = {i: [] for i in range(10)}
         for f in tqdm(self.funs):
-            loss, alpha_loss, _, _ = f.loss(x, y, A)
+            loss, alpha_loss, _, tmp = f.loss(x, y, A)
+            _, gamma = tmp
             if alpha_loss < 0.1:
                 losses[int(alpha_loss * 100)].append(loss)
             if alpha_loss <= alpha and loss < current_loss:
                 current_loss = loss
                 current_alpha_loss = alpha_loss
+                current_gamma = gamma
                 self.fun = f
 
         # print(
@@ -67,7 +69,7 @@ class FiniteAlphaLearner(WrappedFun):
         # plt.clf()
         # plt.plot(list(map(lambda x: np.min(x), losses.values())))
         # plt.savefig('empirical_bests.png')
-        return current_loss, current_alpha_loss
+        return current_loss, current_alpha_loss, current_gamma
 
 
 class FiniteBetaLearner(WrappedFun):
@@ -80,15 +82,16 @@ class FiniteBetaLearner(WrappedFun):
 
     def fit(self, x, y, A, alpha, min_ya_p_ya=0.25):
         beta = alpha * min_ya_p_ya / 2 # TODO: it is not always 2, it depends on P(A), and is unclear how to be set
-        current_loss, current_alpha_loss, current_beta_loss = 1e9, 0., 0.
+        current_loss, current_alpha_loss, current_gamma = 1e9, 0., None
         for f in tqdm(self.funs):
-            loss, alpha_loss, beta_loss, _ = f.loss(x, y, A)
+            loss, alpha_loss, beta_loss, tmp = f.loss(x, y, A)
+            _, gamma = tmp
             if beta_loss <= beta and loss < current_loss:
                 current_loss = loss
                 current_alpha_loss = alpha_loss
-                current_beta_loss = beta_loss
+                current_gamma = gamma
                 self.fun = f
-        return current_loss, current_alpha_loss
+        return current_loss, current_alpha_loss, current_gamma
 
 
 class Majority(NDFunction):
