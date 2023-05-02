@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split
 from utils import find_min_ya_p_ya
@@ -46,3 +47,24 @@ class OneStepAlgorithm:
         print(f"The learnt majority function has weights {self.learner.fun.weight}")
         print(f"Gamma on train is = {gamma_train}")
         print(f"Gamma on test is = {gamma_test}")
+        tradeoff_points_train, tradeoff_points_test = [], []
+        for f in self.learner.funs:
+            obj_train, alph_train, _, _ = f.loss(X_train, Y_train, A_train)
+            obj_test, alph_test, _, _ = f.loss(X_test, Y_test, A_test)
+            tradeoff_points_train.append((alph_train, obj_train))
+            tradeoff_points_test.append((alph_test, obj_test))
+        fig, (ax1, ax2) = plt.subplots(2, 1)
+        # plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+        ax1.scatter([x for x, _ in tradeoff_points_train], [x for _, x in tradeoff_points_train])
+        ax1.title.set_text('Train tradeoff')
+        ax1.set_xlabel('alpha loss')
+        ax1.set_ylabel('objective loss')
+        ax2.scatter([x for x, _ in tradeoff_points_test], [x for _, x in tradeoff_points_test])
+        ax2.title.set_text('Test tradeoff')
+        ax2.set_xlabel('alpha loss')
+        ax2.set_ylabel('objective loss')
+        # plt.xlabel("alpha loss")
+        # plt.ylabel("objective loss")
+        plt.tight_layout()
+        plt.savefig("tradeoff.pdf")
+        plt.show()

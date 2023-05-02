@@ -52,10 +52,10 @@ if __name__ == '__main__':
         lambda x: x[:, 5] > 20,
         lambda x: 3 * x[:, 6],
         # lambda x: x[:, 3]>50000,
-    ], 30000)
-    # alpha_learner = FiniteAlphaLearner(function_class) TODO: there is some bug (I think with random state reuse) why I cannot compare the two in one run
-    # ctrl_alpha = OneStepAlgorithm(alpha_learner, 1e-30)  # ExtendedAlgorithm(learner, 1e-30)
-    # ctrl_alpha.fit((x, y, A))
-    beta_learner = FiniteBetaLearner(function_class)
-    ctrl_beta = OneStepAlgorithm(beta_learner, 1e-30)
-    ctrl_beta.fit((x, y, A))
+    ], 1000)
+    alpha_learner = FiniteAlphaLearner(function_class) # TODO: there is some bug (I think with random state reuse) why I cannot compare the two in one run
+    ctrl_alpha = OneStepAlgorithm(alpha_learner, 1e-30)  # ExtendedAlgorithm(learner, 1e-30)
+    ctrl_alpha.fit((x, y, A))
+    # beta_learner = FiniteBetaLearner(function_class)
+    # ctrl_beta = OneStepAlgorithm(beta_learner, 1e-30)
+    # ctrl_beta.fit((x, y, A))
